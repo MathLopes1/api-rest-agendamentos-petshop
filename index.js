@@ -1,6 +1,7 @@
-const express = require('express')
-const app =  express()
+//Arquivo com responsabilidade de subir o servidor 
+const customExpress = require('./config/customExpress')
 
-app.listen(3000, () => console.log('servidor rodando na porta 300'))
+const app = customExpress()
 
-app.get('/atendimentos', (req, res) => res.send('Você está na rota de atendimentos'))
+app.listen(3000, () => console.log('servidor rodando na porta 3000'))
+
