@@ -34,7 +34,7 @@ class Atendimento {
     const erros = validacoes.filter(campo => !campo.valido)
     //Constante que vai capitar se a variavel erros guardou algum valor, pois ela só era armazenar caso seja false
     const existemErros = erros.length
-    
+
     if (existemErros) {
       res.status(400).json(erros)
     } else {
@@ -53,6 +53,32 @@ class Atendimento {
 
       })
     }
+  }
+
+  //Metodo de listar exportado para o GET de informações gerais
+  lista(res) {
+    const sql = 'SELECT * FROM Atendimentos'
+
+    conexao.query(sql, (erro, resultados) => {
+      if (erro) {
+        res.status(400).json(erro)
+      } else {
+        res.status(200).json(resultados)
+      }
+    })
+  }
+  //Metodo para buscar uma informação com id específico
+  buscarPorId(id, res) {
+    const sql = `SELECT * FROM Atendimentos WHERE id=${id}`
+
+    conexao.query(sql, (erro, resultados) => {
+      const atendimento = resultados[0]
+      if (erro) {
+        res.status(400).json(erro)
+      } else {
+        res.status(200).json(atendimento)
+      }
+    })
   }
 }
 
