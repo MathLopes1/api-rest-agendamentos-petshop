@@ -48,7 +48,7 @@ class Atendimento {
         if (erro) {
           res.status(400).json(erro)
         } else {
-          res.status(201).json(resultados)
+          res.status(201).json(atendimento)
         }
 
       })
@@ -81,7 +81,7 @@ class Atendimento {
     })
   }
 
-  //Metodo para alterar informações utilizado no PATH
+  //Metodo para alterar informações utilizado no PATCH
   altera(id, valores, res) {
     //Caso o valor venha com uma data para alteração, através desse if mudamos a data para o formato aceitavel
     if (valores.data) {
@@ -96,7 +96,19 @@ class Atendimento {
       if (erro) {
         res.status(400).json(erro)
       } else {
-        res.status(200).json(resultados)
+        res.status(200).json({...valores,id})
+      }
+    })
+  }
+
+  deleta(id, res){
+    const sql = 'DELETE FROM Atendimentos WHERE id=?'
+
+    conexao.query(sql, id, (erro, resultados) =>{
+      if(erro){
+        res.status(400).json(erro)
+      } else{
+        res.status(200).json({id})
       }
     })
   }
