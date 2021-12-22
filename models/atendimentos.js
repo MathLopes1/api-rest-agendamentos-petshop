@@ -80,6 +80,27 @@ class Atendimento {
       }
     })
   }
+
+  //Metodo para alterar informações utilizado no PATH
+  altera(id, valores, res) {
+    //Caso o valor venha com uma data para alteração, através desse if mudamos a data para o formato aceitavel
+    if (valores.data) {
+      valores.data = moment(valores.data, 'DD/MM/YYYY').format('YYYY-MM-DD HH:MM:SS')
+    }
+
+    //const sql recebendo a  query de atualização
+    const sql = 'UPDATE Atendimentos SET ? WHERE id=?'
+
+    //executamos a query recebendo os valores das ? através de um array, e testamos se há algum erro
+    conexao.query(sql, [valores, id], (erro, resultados) => {
+      if (erro) {
+        res.status(400).json(erro)
+      } else {
+        res.status(200).json(resultados)
+      }
+    })
+  }
+
 }
 
 module.exports = new Atendimento

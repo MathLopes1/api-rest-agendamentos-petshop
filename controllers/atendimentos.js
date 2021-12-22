@@ -22,4 +22,12 @@ module.exports = app => {
 
         Atendimento.adiciona(atendimento, res)
     })
+
+    //PATH para atualizar dados
+    app.patch('/atendimentos/:id', (req, res) => {
+        const id = parseInt(req.params.id)
+        const valores = req.body
+
+        Atendimento.altera(id, valores, res)
+    })
 }
