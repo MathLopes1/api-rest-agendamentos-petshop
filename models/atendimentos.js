@@ -3,25 +3,57 @@ const moment = require('moment') //Biblioteca para trabalhar com datas
 const conexao = require('../infraestrutura/conexao')
 
 //Classe com os metodos para ações da API na nossa base de dados do MySQL
-class Atendimento{
+class Atendimento {
   //Metodo para Adicionar informações na tabela atendimentos
-   adiciona(atendimento, res){
-        //Tratando as datas
-        const dataCriacao = moment().format('YYYY-MM-DD HH:MM:SS')
-        const data = moment(atendimento.data, 'DD/MM/YYYY').format('YYYY-MM-DD HH:MM:SS')
-        const atendimentoDatado = {...atendimento, dataCriacao, data}
-        //Criando Query e enviando para conexão
-        const sql = 'INSERT INTO Atendimentos SET ?'
+  adiciona(atendimento, res) {
+    //Tratando as datas
+    const dataCriacao = moment().format('YYYY-MM-DD HH:MM:SS')
+    const data = moment(atendimento.data, 'DD/MM/YYYY').format('YYYY-MM-DD HH:MM:SS')
 
-        //Adicionando status http junto com a resposta vinda da rota
-        conexao.query (sql, atendimentoDatado, (erro, resultados) => {
-            if(erro){
-              res.status(400).json(erro)
-          } else {
-              res.status(201).json(resultados)
-          }
-     })
-   } 
+
+    //Validando data. Saber se data informada é menor que a data de criação
+    const dataEhValida = moment(data).isSameOrAfter(dataCriacao)
+    //Validando nome do cliente no body de atendimento.
+    const clienteEhValido = atendimento.cliente.length >= 5
+
+    //Array de objetos para receber o resultado das validações
+    const validacoes = [
+      {
+        nome: 'data',
+        valido: dataEhValida,
+        mensagem: 'Data deve ser maior ou igual a data atual'
+      },
+      {
+        nome: 'cliente',
+        valido: clienteEhValido,
+        mensagem: 'Cliente deve ter pelo menos cinco caracteres'
+      }
+    ]
+
+    //Constante erros que filtra o array de validações no campo "valido" para conferir se o valor é true or false
+    const erros = validacoes.filter(campo => !campo.valido)
+    //Constante que vai capitar se a variavel erros guardou algum valor, pois ela só era armazenar caso seja false
+    const existemErros = erros.length
+    
+    if (existemErros) {
+      res.status(400).json(erros)
+    } else {
+      const atendimentoDatado = { ...atendimento, dataCriacao, data }
+
+      //Criando Query e enviando para conexão
+      const sql = 'INSERT INTO Atendimentos SET ?'
+
+      //Adicionando status http junto com a resposta vinda da rota
+      conexao.query(sql, atendimentoDatado, (erro, resultados) => {
+        if (erro) {
+          res.status(400).json(erro)
+        } else {
+          res.status(201).json(resultados)
+        }
+
+      })
+    }
+  }
 }
 
 module.exports = new Atendimento
