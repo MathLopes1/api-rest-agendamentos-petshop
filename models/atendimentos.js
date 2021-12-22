@@ -5,7 +5,7 @@ const conexao = require('../infraestrutura/conexao')
 //Classe com os metodos para ações da API na nossa base de dados do MySQL
 class Atendimento{
   //Metodo para Adicionar informações na tabela atendimentos
-   adiciona(atendimento){
+   adiciona(atendimento, res){
         //Tratando as datas
         const dataCriacao = moment().format('YYYY-MM-DD HH:MM:SS')
         const data = moment(atendimento.data, 'DD/MM/YYYY').format('YYYY-MM-DD HH:MM:SS')
@@ -13,11 +13,12 @@ class Atendimento{
         //Criando Query e enviando para conexão
         const sql = 'INSERT INTO Atendimentos SET ?'
 
+        //Adicionando status http junto com a resposta vinda da rota
         conexao.query (sql, atendimentoDatado, (erro, resultados) => {
             if(erro){
-            console.log(erro)
+              res.status(400).json(erro)
           } else {
-            console.log(resultados)
+              res.status(201).json(resultados)
           }
      })
    } 
